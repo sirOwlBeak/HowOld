@@ -1,0 +1,87 @@
+calculate age in seconds;
+    input: age or date of birth
+    output: age in seconds
+    Now how would we tackle this problem?
+        say date of birth is 18/08/1986 16:45, we compare to the current date and time the moment the function was started. Say this is for example 19/10/2014 20:25
+        Now we have to find a way to subtract our date of birth from the current date. We need to calculate the difference of 19/10/2014 20:25 - 18/08/1986 16:45
+        To calculate this difference it is probably easier to work in an intermediate unit of days rather than seconds. Since there are 366 days in a leapyear, one more than in a normal year this 
+        inherently implies there are more seconds in a leapyear also.
+        ->we first work out the number of days that already passed in that year.
+            That leaves us with 19 days in the current month + 30 days for september + 31 days in august + 31 days in july + 30 days june + 31 + 30 + 31 + 27 + 31 = 231 days + 1 for the leap year.
+        
+        ->next we calculate the days that we lived in the first year of our life.
+            I lived 31-18 days in august + 30 in september + 31 in october + 30 in nov. + 31 in december = 135 dagen
+        
+        ->next we calculate the days in between last year and the year AFTER the year of birth
+            2013 - 1987 = 26 years
+            then we iterate over every year and check if it is a leapyear:
+                if it is a leapyear we add 366 else we add 365 so that leaves us with:
+                2013 -> + 365
+                2012 -> + 366
+                2011 -> + 365
+                2010 -> + 365
+                2009 -> + 365
+                2008 -> + 366
+                2007 -> + 365
+                2006 -> + 365
+                2005 -> + 365
+                2004 -> + 366
+                2003 -> + 365
+                2002 -> + 365
+                2001 -> + 365
+                2000 -> + 366
+                1999 -> + 365
+                1998 -> + 365
+                1997 -> + 365
+                1996 -> + 366
+                1995 -> + 365
+                1994 -> + 365
+                1993 -> + 365
+                1992 -> + 366
+                1991 -> + 365
+                1990 -> + 365
+                1989 -> + 365
+                1988 -> + 366
+                1987 -> + 365
+                        = 9862 days
+        
+        -> next step is adding up all these days we calculated
+            232 + 135 + 9862 = 10229 days
+            
+        -> we are now ready to convert to seconds 
+            10229 * 24h * 60m * 60s = 883.785.600 seconds
+        -> if the optional time of birth has been passed we can add those in for good measure and to reduce the error of the calculation    
+            20:25 - (24:00-16:45) = 20:25 - 8:15 = 12:10 => 12h*60m*60s + 10s = 43.210 seconds
+            SO I HAVE NOW LIVED 883.828.810 SECONDS AND COUNTING!
+        
+    implementation:
+        -> 3 centuries worth of leapyears will be stored in a list or a tuple. This way we just do a lookup instead of a calculation. I will actually implement both the table as the calculation for unknown years to investigate what is faster and so i have functional leapyear calculation algorithm. And after looking through the python docs there already is such a functionality in the standard library.
+        calendar.isleap(y) and calendar.leapdays(y1, y2), from y1 to y2 exclusive.
+        
+        -> actually Python has a very elaborate module to handle time and dates. Using this will simplify the arithmetic alot and if i use an aware object than i can probably keep daylight savings time and local timezone differences correct to! Blast those freaking DST and timezones!!!!
+            timedelta object to make calculations with dates and time probably a WHOLE LOT easier
+            datetime object to use a naive or aware representation of current datetime and the datetime input from the user
+        
+        -> the implementation will use argument parsing from the command line, so this a good project to investigate the parsing of cli options and the modules that python provides.
+        possible format is 2014-10-20
+        
+        -> make the program and the functions actually usable from the interactive python shell too. 
+        
+ core functionality:
+ 
+ the user is to provide his day of birth with optional time of birth via the command line
+ the tool then calculates your age in seconds based on the current date and the information provided.
+ finally it reports back your age to the console.
+ 
+ breakdown of modules:
+ 
+ secondsonearth.py
+    
+    function ageInSeconds(timedelta_obj)
+        return integer age_in_seconds
+        
+    function constructTimeDelta(datetime_obj)
+        return obj timedelta
+    
+    function constructDateTime(date, time=[0,0,0])
+        return obj datetime
