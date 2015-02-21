@@ -1,16 +1,34 @@
+import os
+
 from setuptools import setup, find_packages
 
+
+about_path = os.path.join(os.getcwd(), 'agetoseconds', '__about__.py')
+about = {}
+with open(about_path) as fp:
+    exec(fp.read(), about)
+
+
 setup(
-    name='a2s',
-    version='1.0',
-    description='calculates your age in seconds',
-    author='sirOwlBeak',
-    packages=find_packages(),
-    include_package_data=True,
-    install_requires=[
+    name = about["__title__"],
+    version = about["__version__"],
+    description = about["__summary__"],
+    author = about["__author__"],
+    
+    classifiers = [
+        'Development Status :: 3 - Alpha',
+        'Environment :: Console',
+        'Intended Audience :: End Users/Desktop',
+        'Programming Language :: Python :: 2.7',
+    ],
+    
+    packages = find_packages(),
+    
+    install_requires = [
         'Click',
     ],
-    entry_points='''
+    
+    entry_points = '''
         [console_scripts]
         a2s=agetoseconds.a2s:cli
     ''',
