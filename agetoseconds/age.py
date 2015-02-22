@@ -43,7 +43,7 @@ class Age(object):
         log.debug("calculated timedelta -> {} seconds ".format(self._conversion[Base.seconds]))
     
     
-    ConversionTable = {
+    conversionDivisors = {
         Base.seconds + 1 : 60,
         Base.minutes + 1 : 60,
         Base.hours + 1   : 24,
@@ -57,6 +57,10 @@ class Age(object):
         #self._conversion = [ 0 for val in self._conversion[Base.seconds+1:] ]
         log.debug("converting age to base {}".format(self._base))
         for i in range(self._base):
+            c_div = Age.conversionDivisors.get(i+1)
+            log.debug("conversion divisor -> {0}".format(c_div))
+        '''
+        for i in range(self._base):
             total = self._conversion[i-1]
             log.debug("index {0} -> total: {1}".format(i, total))
             remainder = total % Age.ConversionTable.get(i+1)
@@ -67,6 +71,7 @@ class Age(object):
             self._conversion[i+1] = base
             log.debug("'remainder' stored at index {}".format(i-1))
             log.debug("'base' stored at index {}".format(i))
+        '''
 
 
 if __name__ == "__main__":
@@ -91,4 +96,6 @@ if __name__ == "__main__":
     log = logging.getLogger(__name__)
     
     user_age = Age(1986, 8, 18, 16, 55, 45)
+    user_age.get()
+    user_age.base = Base.years
     user_age.get()

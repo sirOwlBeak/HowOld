@@ -1,0 +1,46 @@
+ar = 0, 0, 0, 0, 0, 0
+
+--
+calculate() -> ar = S, 0, 0, 0, 0, 0
+                    0  1  2  3  4  5
+--
+
+iteration = 0
+
+total = ar[0] == S
+remainder = total % c_div
+conversion = (total - remainder) / c_div
+
+ar[0] = remainder
+ar[1] = conversion
+
+--
+convert() -> ar = s, M, 0, 0, 0, 0
+                  0  1  2  3  4  5
+--
+
+iteration = 1
+
+total = ar[1] == M
+remainder = total % c_div
+conversion = (total - remainder) / c_div
+
+ar[1] = remainder
+ar[2] = conversion
+
+--
+convert() -> ar = s, m, H, 0, 0, 0
+                  0  1  2  3  4  5
+--
+
+...
+
+--
+convert() -> ar = s, m, h, d, w, Y
+                  0  1  2  3  4  5
+--
+
+iteration = 5
+
+continue
+
