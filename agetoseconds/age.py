@@ -27,7 +27,7 @@ class Age(object):
         self._base = unit
     
     
-    def get(self):
+    def tick(self):
         self._calculate()
         report = self._conversion[Base.seconds]
         if self._base > Base.seconds:
@@ -96,11 +96,11 @@ if __name__ == "__main__":
     log = logging.getLogger(__name__)
     
     user_age = Age(1986, 8, 18, 16, 55, 45)
-    report = user_age.get()
+    report = user_age.tick()
     log.info(report)
     user_age.base = Base.years
-    report = user_age.get()
+    report = user_age.tick()
     log.info(report)
     user_age.base = Base.minutes
-    report = user_age.get()
+    report = user_age.tick()
     log.info(report)
