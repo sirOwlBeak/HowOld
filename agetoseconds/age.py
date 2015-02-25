@@ -9,8 +9,10 @@ class Base:
 
 
 class Age(object):
-    def __init__(self, year, month, day, hour=0, minute=0, second=0):
-        self._birth = datetime.datetime(year, month, day, hour, minute, second)
+    def __init__(self, **kwargs):
+        self._dateobj = None
+        self._timeobj = None
+        self._bday = datetime.datetime.now()
         self._conversion = [0]*6
         self._base = Base.seconds
     
@@ -28,7 +30,14 @@ class Age(object):
     
     
     def tick(self):
-        self._calculate()
+        ''' calling tick() will report an integer signifying your age
+            in base seconds.
+            If the base has been set to another value, before this call, 
+            the method will return a tuple with the seconds as first 
+            element up to the specified base unit.
+        '''
+        self._conversion = [ 0 for val in self._conversion ]
+        self._conversion[Base.seconds] = self._calculate()
         report = self._conversion[Base.seconds]
         if self._base > Base.seconds:
             self._convert()
@@ -36,12 +45,24 @@ class Age(object):
         return report
     
     
+    def set(self, year, month, day, hour=0, minute=0, second=0):
+        self._dateobj = datetime.date(year, month, day)
+        self._timeobj = datetime.time(hour, minute, second, 0)
+        self._bday = datetime.datetime.combine(self._dateobj, self._timeobj)
+    
+    
+    def addTime(self, hour=0, minute=0, second=0):
+        if self._dateobj:
+            self._timeobj = datetime.time(hour, minute, second, 0)
+            self._bday = datetime.datetime.combine(self._dateobj, self._timeobj)
+    
+    
     def _calculate(self):
         now = datetime.datetime.now()
-        timedelta = now - self._birth
-        self._conversion = [ 0 for val in self._conversion ]
-        self._conversion[Base.seconds] = int(timedelta.total_seconds())
+        timedelta = now - self._bday
+        result = int(timedelta.total_seconds())
         log.debug("calculated timedelta -> {} seconds ".format(self._conversion[Base.seconds]))
+        return result
     
     
     conversionDivisors = {
@@ -95,12 +116,35 @@ if __name__ == "__main__":
         logging.basicConfig(level=loglevel)
     log = logging.getLogger(__name__)
     
-    user_age = Age(1986, 8, 18, 16, 55, 45)
-    report = user_age.tick()
-    log.info(report)
-    user_age.base = Base.years
-    report = user_age.tick()
-    log.info(report)
-    user_age.base = Base.minutes
-    report = user_age.tick()
-    log.info(report)
+    bday = Age()
+    bday.set(1986, 8, 18)
+    log.info("age: {}".format(bday.tick()))
+    
+    bday.base = Base.years
+    log.info("base years: {}".format(bday.tick()))
+    bday.base = Base.weeks
+    log.info("base weeks: {}".format(bday.tick()))
+    bday.base = Base.days
+    log.info("base days: {}".format(bday.tick()))
+    bday.base = Base.hours
+    log.info("base hours: {}".format(bday.tick()))
+    bday.base = Base.minutes
+    log.info("base minutes: {}".format(bday.tick()))
+    bday.base = Base.seconds
+    log.info("base seconds: {}".format(bday.tick()))
+    
+    bday.addTime(16, 45, 55)
+    log.info(bday.tick())
+    
+    bday.base = Base.years
+    log.info("base years: {}".format(bday.tick()))
+    bday.base = Base.weeks
+    log.info("base weeks: {}".format(bday.tick()))
+    bday.base = Base.days
+    log.info("base days: {}".format(bday.tick()))
+    bday.base = Base.hours
+    log.info("base hours: {}".format(bday.tick()))
+    bday.base = Base.minutes
+    log.info("base minutes: {}".format(bday.tick()))
+    bday.base = Base.seconds
+    log.info("base seconds: {}".format(bday.tick()))
