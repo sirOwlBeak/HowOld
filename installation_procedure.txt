@@ -1,0 +1,11 @@
+PEP 370 - Per user site-packages directory
+
+with setuptools
+	python setup.py install --user
+
+
+with pip
+	pip install . --user
+	
+add .local/bin to the envvariables:
+	export PATH=$PATH:$HOME/.local/bin
