@@ -30,6 +30,6 @@ setup(
     
     entry_points = '''
         [console_scripts]
-        howold=agetoseconds.age2sec:cli
+        howold=agetoseconds.main:cli
     ''',
 )

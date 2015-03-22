@@ -4,6 +4,8 @@ import datetime
 import logging
 
 
+log = logging.getLogger(__name__)
+
 class Base:
     seconds, minutes, hours, days, weeks, years = range(6)
 
