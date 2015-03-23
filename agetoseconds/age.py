@@ -6,15 +6,21 @@ import logging
 
 log = logging.getLogger(__name__)
 
+
 class Base:
     seconds, minutes, hours, days, weeks, years = range(6)
 
 
 class Age(object):
-    def __init__(self, **kwargs):
-        self._dateobj = None
-        self._timeobj = None
-        self._bday = datetime.datetime.now()
+    def __init__(self, year, month, day, hour=0, minute=0, second=0, **kwargs):
+        self._dateObject = datetime.date(year, month, day)
+        if kwargs.get('dateObject'):
+            self._dateObject = kwargs.get('dateObject')
+        if kwargs.get('timeObject'):
+            self._timeObject = kwargs.get('timeObject')
+        else:
+            self._timeObject = datetime.time(hour, minute, second, 0)
+        self._age = datetime.datetime.combine(self._dateObject, self._timeObject)
         self._conversion = [0]*6
         self._base = Base.seconds
     
@@ -31,12 +37,11 @@ class Age(object):
         self._base = unit
     
     
-    def tick(self):
-        ''' calling tick() will report an integer signifying your age
-            in base seconds.
-            If the base has been set to another value, before this call, 
-            the method will return a tuple with the seconds as first 
-            element up to the specified base unit.
+    def get(self):
+        ''' This method returns your age as an integer by default.
+        If 'base' was set to another unit it will return a tuple  with 
+        the first element being the value 'seconds' up to the specified 
+        base unit.
         '''
         self._conversion = [ 0 for val in self._conversion ]
         self._conversion[Base.seconds] = self._calculate()
@@ -47,21 +52,17 @@ class Age(object):
         return report
     
     
-    def set(self, year, month, day, hour=0, minute=0, second=0):
-        self._dateobj = datetime.date(year, month, day)
-        self._timeobj = datetime.time(hour, minute, second, 0)
-        self._bday = datetime.datetime.combine(self._dateobj, self._timeobj)
-    
-    
-    def addTime(self, hour=0, minute=0, second=0):
-        if self._dateobj:
-            self._timeobj = datetime.time(hour, minute, second, 0)
-            self._bday = datetime.datetime.combine(self._dateobj, self._timeobj)
+    def setTime(self, hour=0, minute=0, second=0, **kwargs):
+        if kwargs.get('timeObject'):
+            self._timeObject = kwargs.get('timeObject')
+        else:
+            self._timeObject = datetime.time(hour, minute, second, 0)
+        self._age = datetime.datetime.combine(self._dateObject, self._timeObject)
     
     
     def _calculate(self):
         now = datetime.datetime.now()
-        timedelta = now - self._bday
+        timedelta = now - self._age
         result = int(timedelta.total_seconds())
         log.debug("calculated timedelta -> {} seconds ".format(self._conversion[Base.seconds]))
         return result
@@ -118,35 +119,34 @@ if __name__ == "__main__":
         logging.basicConfig(level=loglevel)
     log = logging.getLogger(__name__)
     
-    bday = Age()
-    bday.set(1986, 8, 18)
-    log.info("age: {}".format(bday.tick()))
     
+    bday = Age(1986, 8, 18)
+    log.info("age: {}".format(bday.get()))
     bday.base = Base.years
-    log.info("base years: {}".format(bday.tick()))
+    log.info("base years: {}".format(bday.get()))
     bday.base = Base.weeks
-    log.info("base weeks: {}".format(bday.tick()))
+    log.info("base weeks: {}".format(bday.get()))
     bday.base = Base.days
-    log.info("base days: {}".format(bday.tick()))
+    log.info("base days: {}".format(bday.get()))
     bday.base = Base.hours
-    log.info("base hours: {}".format(bday.tick()))
+    log.info("base hours: {}".format(bday.get()))
     bday.base = Base.minutes
-    log.info("base minutes: {}".format(bday.tick()))
+    log.info("base minutes: {}".format(bday.get()))
     bday.base = Base.seconds
-    log.info("base seconds: {}".format(bday.tick()))
+    log.info("base seconds: {}".format(bday.get()))
     
-    bday.addTime(16, 45, 55)
-    log.info(bday.tick())
     
+    bday.setTime(16, 45, 55)
+    log.info(bday.get())
     bday.base = Base.years
-    log.info("base years: {}".format(bday.tick()))
+    log.info("base years: {}".format(bday.get()))
     bday.base = Base.weeks
-    log.info("base weeks: {}".format(bday.tick()))
+    log.info("base weeks: {}".format(bday.get()))
     bday.base = Base.days
-    log.info("base days: {}".format(bday.tick()))
+    log.info("base days: {}".format(bday.get()))
     bday.base = Base.hours
-    log.info("base hours: {}".format(bday.tick()))
+    log.info("base hours: {}".format(bday.get()))
     bday.base = Base.minutes
-    log.info("base minutes: {}".format(bday.tick()))
+    log.info("base minutes: {}".format(bday.get()))
     bday.base = Base.seconds
-    log.info("base seconds: {}".format(bday.tick()))
+    log.info("base seconds: {}".format(bday.get()))
