@@ -1,74 +1,69 @@
-
 import click
-import shelve
-import os
-import os.path
+import datetime
 
 import age
 
 
-'''
-    user_data = {
-        'age' = None,
-        'config' = None
-    }
-
-'''
-
-DB_FILEPATH = os.path.join(os.environ['HOME'], '.local', 'applications')
-DB_FILENAME = 'howold-userdata.db'
+SECONDS = 'seconds' 
+MINUTES = 'minutes' 
+HOURS = 'hours' 
+DAYS = 'days' 
+WEEKS = 'weeks' 
+YEARS = 'years'
 
 
-def validateDateParameter(ctx, param, value):
+DATE_SPLIT_CHAR = '-'
+def validateDate(ctx, param, value):
     try:
-        validParameter = [int(token) for token in value.lower().strip().split('-')]
-        return validParameter
+        args = [int(arg) for arg in value.strip().lower().split(DATE_SPLIT_CHAR, 3) if arg.isnumeric()]
+        validated = datetime.date(*args)
+        return validated
     except ValueError:
-        raise click.BadParameter("date should be formatted as YYYY-MM-DD")
+        raise click.BadParameter("\nPlease format your date as 'yyyy-mm-dd'.")
+    except:
+        raise
 
 
-def validateTimeParameter(ctx, param, value):
+TIME_SPLIT_CHAR = ':'
+def validateTime(ctx, param, value):
     try:
-        validParameter = [int(token) for token in value.lower().strip().split(':')]
-        return validParameter
+        args = [int(arg) for arg in value.strip().lower().split(TIME_SPLIT_CHAR, 3) if arg.isnumeric()]
+        validated = datetime.time(*args)
+        return validated
     except ValueError:
-        raise click.BadParameter("time should be formatted as hh:mm:ss")
+        raise click.BadParameter("\nPlease format your time as 'hh:mm:ss'.")
+    except:
+        raise
 
 
-@click.group(options_metavar = "<options>")
-@click.option("-d", 'debug', is_flag=True)
+def validateUnit(ctx, param, value):
+    try:
+        validated = value.strip().lower()
+        if validated in age.Age.units:
+            click.echo(validated)
+            return validated
+        else:
+            return SECONDS
+    except:
+        raise
+
+
+@click.group()
 @click.version_option()
-@click.pass_context
-def cli(ctx, debug):
+def cli():
     ''' This tool calculates your age in seconds
     '''
-    ctx.obj = {'DEBUG':debug}
+    pass
 
 
-def newAge(date_values, time_values=(0,0,0)):
-    year, month, day = date_values
-    hour, minute, second = time_values
-    return age.Age(year, month, day, hour, minute, second)
-
-
-@cli.command(options_metavar = "<options>")
-@click.argument("date", callback=validateDateParameter)
-@click.option("--time", callback=validateTimeParameter, default="0:0:0")
-@click.option("--save", 'user')
-@click.pass_context
-def birth(ctx, date, time, user):
-    ageObject = newAge(date, time)
-    click.echo(ageObject.get())
-    if user:
-        data = {
-            'age' : ageObject,
-        }
-        filepath = os.path.join(os.getcwd() if ctx.obj['DEBUG'] else DB_FILEPATH, DB_FILENAME)
-        db = shelve.open(filepath)
-        if db.get(str(user)):
-            click.echo('user exists')
-            db.get(str(user)).update(data)
-        else:
-            click.echo('make user')
-            db[str(user)] = data
-        db.close()
+@cli.command()
+@click.argument('date', callback=validateDate)
+@click.option('--time', callback=validateTime, default='0:0:0')
+@click.option('--unit', callback=validateUnit, default=SECONDS)
+def report(date, time, unit):
+    age_user = age.Age(date, time)
+    if unit != SECONDS:
+        age_user.unit = unit
+        click.echo(age_user.get())
+    else:
+        click.echo(age_user.get())
