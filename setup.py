@@ -3,7 +3,7 @@ import os
 from setuptools import setup, find_packages
 
 
-about_path = os.path.join(os.getcwd(), 'agetoseconds', '__about__.py')
+about_path = os.path.join(os.getcwd(), 'howold', '__about__.py')
 about = {}
 with open(about_path) as fp:
     exec(fp.read(), about)
@@ -30,6 +30,6 @@ setup(
     
     entry_points = '''
         [console_scripts]
-        howold=agetoseconds.main:cli
+        howold=howold.main:cli
     ''',
 )
