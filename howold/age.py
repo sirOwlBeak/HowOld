@@ -42,10 +42,10 @@ class Age(object):
 
     @unit.setter
     def unit(self, unit):
-        assert unit in Age.Units
+        assert unit in Age.units
         #assert unit >= Unit.seconds
         #assert unit <= Unit.years
-        self._unit = Age.Units.get(unit)
+        self._unit = Age.units.get(unit)
 
 
     def get(self):
