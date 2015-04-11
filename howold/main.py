@@ -40,7 +40,6 @@ def validateUnit(ctx, param, value):
     try:
         validated = value.strip().lower()
         if validated in age.Age.units:
-            click.echo(validated)
             return validated
         else:
             return SECONDS
