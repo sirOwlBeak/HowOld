@@ -25,7 +25,7 @@ setup(
     packages = find_packages(),
     
     install_requires = [
-        'Click',
+        'Click>=3.3',
     ],
     
     entry_points = '''
